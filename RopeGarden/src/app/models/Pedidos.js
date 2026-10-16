@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 
 const PedidosSchema = new mongoose.Schema(
@@ -37,6 +36,8 @@ const PedidosSchema = new mongoose.Schema(
             required: true,
             uppercase: true,
             trim: true,
+            minlength: 2,
+            maxlength: 2,
         },
 
         vendedor: {
@@ -47,16 +48,26 @@ const PedidosSchema = new mongoose.Schema(
 
         itens: [
             {
+                produtoId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Produto",
+                    required: true,
+                },
+
+                nomeProduto: {
+                    type: String,
+                    required: true,
+                    trim: true,
+                },
+
                 quantidade: {
                     type: Number,
                     required: true,
                     min: 1,
-                },
-
-                descricao: {
-                    type: String,
-                    required: true,
-                    trim: true,
+                    validate: {
+                        validator: Number.isInteger,
+                        message: "A quantidade deve ser um número inteiro.",
+                    },
                 },
 
                 status: {
@@ -71,7 +82,6 @@ const PedidosSchema = new mongoose.Schema(
                         "EMBALADO",
                     ],
                     default: "NAO INICIADO",
-                    required: true,
                 },
             },
         ],
@@ -102,7 +112,9 @@ const PedidosSchema = new mongoose.Schema(
             type: String,
             enum: [
                 "NAO INICIADO",
+                "EM PRODUCAO",
                 "FINALIZANDO",
+                "FINALIZADO",
                 "EM ROTA",
                 "ENTREGUE",
                 "CANCELADO",
@@ -117,7 +129,9 @@ const PedidosSchema = new mongoose.Schema(
             required: true,
         },
     },
-    { timestamps: true }
+    {
+        timestamps: true,
+    }
 );
 
 export default mongoose.model(
