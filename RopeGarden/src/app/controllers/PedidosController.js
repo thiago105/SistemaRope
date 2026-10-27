@@ -1,4 +1,4 @@
-import * as UseCase from '../useCases/index'
+import * as UseCase from '../useCases/index.js'
 
 class PedidosController {
   async pedidos(req, res) {

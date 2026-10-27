@@ -1,5 +1,5 @@
-import * as Repository from '../../repository/index';
-import * as Utils from '../../../utils/index';
+import * as Repository from '../../repository/index.js';
+import * as Utils from '../../../ultils/index.js';
 
 export async function index(payload) {
   try {
@@ -9,7 +9,7 @@ export async function index(payload) {
         sucess: true,
         message: "solicitacao realizada com sucesso.",
         data: {
-            
+
         }
     }
    } catch (error) {

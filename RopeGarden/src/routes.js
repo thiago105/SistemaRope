@@ -1,7 +1,7 @@
 import Router from 'express';
 
-import Pedidos from './app/controllers/PedidosController';
-import Produtos from './app/controllers/ProdutosController'
+import Pedidos from './app/controllers/PedidosController.js';
+import Produtos from './app/controllers/ProdutosController.js'
 
 const routes = new Router();
 

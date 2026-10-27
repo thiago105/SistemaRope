@@ -7,9 +7,19 @@ async function createCollections() {
 
         const db = mongoose.connection.db;
 
-        const collectionDesejada = "pedidos";
+        const collectionsDesejadas = [
+            "pedidos",
+            "produtos",
+        ];
 
-        // Consultar as collections existentes
+        const collectionsAntigas = [
+            "clientes",
+            "status",
+            "usuarios",
+            "vendedores",
+        ];
+
+        // Consultar collections existentes
         const existingCollections = await db
             .listCollections({}, { nameOnly: true })
             .toArray();
@@ -18,42 +28,38 @@ async function createCollections() {
             (collection) => collection.name
         );
 
-        // Criar a collection pedidos, caso não exista
-        if (!existingNames.includes(collectionDesejada)) {
-            await db.createCollection(collectionDesejada);
-
-            console.log(
-                `Collection "${collectionDesejada}" criada com sucesso!`
-            );
-        } else {
-            console.log(
-                `Collection "${collectionDesejada}" já existe.`
-            );
-        }
-
-        // Collections antigas que não serão utilizadas
-        const collectionsAntigas = [
-            "clientes",
-            "status",
-            "usuarios",
-            "vendedores",
-        ];
-
-        // Excluir as collections antigas
-        for (const collection of collectionsAntigas) {
-            if (existingNames.includes(collection)) {
-                await db.dropCollection(collection);
+        // Criar collections necessárias
+        for (const nome of collectionsDesejadas) {
+            if (!existingNames.includes(nome)) {
+                await db.createCollection(nome);
 
                 console.log(
-                    `Collection "${collection}" removida com sucesso!`
+                    `Collection "${nome}" criada com sucesso!`
+                );
+            } else {
+                console.log(
+                    `Collection "${nome}" já existe.`
                 );
             }
         }
 
-        console.log("Organização do banco finalizada!");
+        // Remover collections antigas
+        for (const nome of collectionsAntigas) {
+            if (existingNames.includes(nome)) {
+                await db.dropCollection(nome);
+
+                console.log(
+                    `Collection "${nome}" removida com sucesso!`
+                );
+            }
+        }
+
+        console.log(
+            "Organização do banco RopeGarden concluída!"
+        );
     } catch (error) {
         console.error(
-            "Erro ao organizar as collections:",
+            "Erro ao organizar o banco:",
             error.message
         );
 
