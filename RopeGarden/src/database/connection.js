@@ -1,34 +1,40 @@
-
-const { MongoClient } = require("mongodb");
-require("dotenv").config();
+import mongoose from "mongoose";
+import "dotenv/config";
 
 const uri = process.env.MONGODB_URI;
 const databaseName = process.env.MONGODB_DATABASE;
 
+// Validar as variáveis de ambiente
 if (!uri) {
-    throw new Error("MONGODB_URI não foi definida no arquivo .env");
+    throw new Error(
+        "MONGODB_URI não foi definida no arquivo .env"
+    );
 }
 
 if (!databaseName) {
-    throw new Error("MONGODB_DATABASE não foi definida no arquivo .env");
+    throw new Error(
+        "MONGODB_DATABASE não foi definida no arquivo .env"
+    );
 }
 
-const client = new MongoClient(uri);
-
-async function connectDatabase() {
+// Conectar ao MongoDB
+export async function connectDatabase() {
     try {
-        await client.connect();
+        await mongoose.connect(uri, {
+            dbName: databaseName,
+        });
 
         console.log("MongoDB conectado com sucesso!");
 
-        return client.db(databaseName);
+        return mongoose.connection;
     } catch (error) {
-        console.error("Erro ao conectar ao MongoDB:", error);
+        console.error(
+            "Erro ao conectar ao MongoDB:",
+            error.message
+        );
+
         throw error;
     }
 }
 
-module.exports = {
-    client,
-    connectDatabase,
-};
+export default mongoose;

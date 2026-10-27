@@ -1,19 +1,24 @@
-
-const { connectDatabase, client } = require("./connection");
+import mongoose from "mongoose";
+import { connectDatabase } from "./connection.js";
 
 async function createCollections() {
     try {
-        const db = await connectDatabase();
+        await connectDatabase();
+
+        const db = mongoose.connection.db;
+
         const collectionDesejada = "pedidos";
+
+        // Consultar as collections existentes
         const existingCollections = await db
-            .listCollections()
+            .listCollections({}, { nameOnly: true })
             .toArray();
 
         const existingNames = existingCollections.map(
             (collection) => collection.name
         );
 
-        // Cria a collection pedidos, caso ela ainda não exista.
+        // Criar a collection pedidos, caso não exista
         if (!existingNames.includes(collectionDesejada)) {
             await db.createCollection(collectionDesejada);
 
@@ -26,7 +31,7 @@ async function createCollections() {
             );
         }
 
-        // Collections antigas que não serão mais utilizadas.
+        // Collections antigas que não serão utilizadas
         const collectionsAntigas = [
             "clientes",
             "status",
@@ -34,6 +39,7 @@ async function createCollections() {
             "vendedores",
         ];
 
+        // Excluir as collections antigas
         for (const collection of collectionsAntigas) {
             if (existingNames.includes(collection)) {
                 await db.dropCollection(collection);
@@ -48,10 +54,12 @@ async function createCollections() {
     } catch (error) {
         console.error(
             "Erro ao organizar as collections:",
-            error
+            error.message
         );
+
+        process.exitCode = 1;
     } finally {
-        await client.close();
+        await mongoose.disconnect();
     }
 }
 
